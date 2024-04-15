@@ -8,6 +8,14 @@ The app checks for updates in the system information at regular intervals
 and refreshes the table if any of the system information has changed since 
 the previous refresh.
 
+## How to Run
+
+The app can be run by executing the main.sh script in the src directory
+
+```bash
+$ cd src && ./main.sh
+```
+
 ## Wire-frame 
 
 <pre>
