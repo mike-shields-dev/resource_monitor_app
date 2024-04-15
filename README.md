@@ -10,6 +10,7 @@ the previous refresh.
 
 ## Wire-frame 
 
+<pre>
 ╔══════════════════════════════════════════╗
 ║ System Information                       ║
 ╠════════════════════╤═════════════════════╣
@@ -29,7 +30,7 @@ the previous refresh.
 ╟────────────────────┼─────────────────────╢
 ║ IP Addressing Mode │ Dynamic || Static   ║
 ╚════════════════════╧═════════════════════╝
-
+</pre>
 
 ## Test
 
