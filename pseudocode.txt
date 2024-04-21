@@ -1,0 +1,124 @@
+// System information "getter" functions:
+
+FUNCTION get_hostname()
+    DECLARE hostname 
+    // Obtain the hostname from the System
+    // using shell command and assign it to hostname
+    RETURN hostname
+END FUNCTION
+
+FUNCTION get_OS()
+    // Obtain the operating system's name using shell commands
+    RETURN operating_system
+END FUNCTION
+
+FUNCTION get_uptime()
+    // Obtain the up-time from the System using shell commands
+    RETURN uptime in the format "HH:MM" 
+END FUNCTION
+
+FUNCTION get_RAM()
+    // Obtain the total RAM in appropriate SI units from the System using shell commands
+    RETURN total_ram
+END FUNCTION
+
+FUNCTION get_free_RAM()
+    // Obtain the free RAM in appropriate SI units from the System using shell commands
+    RETURN free_RAM
+END FUNCTION
+
+FUNCTION get_disk_size()
+    // Obtain the primary disk's total capacity in appropriate SI units
+    using shell commands
+    RETURN disk_size
+END FUNCTION
+
+FUNCTION get_disk_space()
+    // Obtain the primary disk's free space in appropriate SI units
+    using shell commands
+    RETURN disk_space
+END FUNCTION
+
+FUNCTION get_IP_address()
+    // Obtain the IP Address of the device's primary network interface
+    // using shell commands
+    RETURN ip_address
+END FUNCTION
+
+FUNCTION get_ip_mode()
+    // Obtain the IP addressing mode of the primary network interface
+    // using shell commands
+    RETURN ip_mode
+END FUNCTION
+
+// Utility functions:
+
+FUNCTION get_longest_string_length(strings[] as string) : integer
+    // Determine the length of the longest string in the strings array
+    RETURN max_length
+END FUNCTION
+
+// Printing functions
+
+FUNCTION print_header(header, max_key_length, max_value_length)
+    // Using the max_key_length and max_value_length,
+    // determine the table's width and print 
+    // the table header in the format:
+    
+    PRINT "╔════════╗"
+    PRINT "║ header ║" 
+END FUNCTION
+
+FUNCTION print_row(key, value, max_key_length, max_value_length)
+    // Using the max_key_length and max_value_length
+    // to determine the key column and value column widths
+    // and print the table row in the format:
+    
+    PRINT "╔═════╤═══════╗"
+    PRINT "║ key │ value ║
+END FUNCTION
+
+FUNCTION print_table_end(max_key_length, max_value_length)
+    // Using the max_key_length and max_value_length
+    // to determine the key column and value column widths
+    // and print the table end in the format:
+    
+    PRINT "╚════╧════════╝"
+END FUNCTION
+
+DECLARE table_data as HashMap
+
+// Key: The text to be displayed in the first table columns
+// Value: A reference to the getter function  
+
+table_data["Host Name"]=get_hostname
+table_data["Operating System"]=get_OS
+table_data["Running Tasks"]=get_hostname
+table_data["System Up-Time"]=get_uptime
+table_data["Total Disk Space"]=get_disk_size
+table_data["Free Disk Space"]=get_disk_space
+table_data["Host IP Address"]=get_IP_address
+table_data["IP Addressing Mode"]=get_IP_mode
+
+// To allow the table's columns to accommodate
+// the longest key and longest value in the table data,
+// iterate the table data and extract the keys and values
+
+// A variable to store the table's keys
+DECLARE table_keys[] as string
+
+// An array to store the table's values
+DECLARE table_values as string
+
+FOR key in table_data
+    ADD key to table_keys     
+END FOR
+
+FOR value in table_data
+    ADD value to table_values     
+END FOR
+
+
+
+PROCESS
+    READ
