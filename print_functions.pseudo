@@ -1,0 +1,38 @@
+// Functions responsible for printing the table and it's 
+// data to the command line
+
+function print_header(table_dims)
+    // Using max_key_length and max_value_length,
+    // determine the table's width and print 
+    // the table header in the format:
+    
+    // The number of horizontal box characters in the top border
+    // not including the corner box characters
+    DECLARE top_border_width = table_dims["header_width"] - 2
+
+    PRINT "╔" + "═"
+    PRINT "║ header      ║"
+    PRINT "\n"
+    PRINT "╠═════╤═══════╣"
+    PRINT "\n"
+end
+
+function print_row(key, value, max_key_length, max_value_length)
+    // Using the max_key_length and max_value_length
+    // to determine the key column and value column widths
+    // print the table row in the format:
+    PRINT "║ key │ value ║"
+    PRINT "\n"
+    PRINT "╟─────┼───────╢"
+    PRINT "\n"
+end
+
+function print_last_row(key, value, max_key_length, max_value_length)
+    // Using the max_key_length and max_value_length
+    // to determine the key column and value column widths
+    // and print the bottom border in the format:
+    PRINT "║ key │ value ║"
+    PRINT "\n"
+    PRINT "╚═════╧═══════╝"
+    PRINT "\n"
+end

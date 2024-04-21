@@ -1,0 +1,33 @@
+// Import functions
+
+IMPORT (
+    get_hostname
+    get_op_sys
+    get_task_count
+    get_total_RAM
+    get_free_RAM
+    get_disk_size
+    get_disk_space
+    get_IP_address
+    get_IP_mode
+    get_max_length
+) 
+
+DECLARE table_data as HashMap
+// Populate the table data hashmap
+// Key: The text to be displayed in the first table columns
+// Value: A reference to the getter function  
+table_data["Host Name"]=get_hostname
+table_data["Operating System"]=get_OS
+table_data["Running Tasks"]=get_hostname
+table_data["System Up-Time"]=get_uptime
+table_data["Total Disk Space"]=get_disk_size
+table_data["Free Disk Space"]=get_disk_space
+table_data["Host IP Address"]=get_IP_address
+table_data["IP Addressing Mode"]=get_IP_mode
+
+// To allow the table's overall width and column widths to
+// dynamically respond to table's content,
+// the longest key and longest value in the table data 
+// must be determined
+

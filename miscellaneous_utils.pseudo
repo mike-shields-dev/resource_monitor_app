@@ -1,0 +1,83 @@
+// Miscellaneous Utility functions
+
+// A function that accepts an array of strings
+// and returns the length of the longest string
+function get_max_length(strings[]) do
+    // determine and return the maximum string length in the strings array
+    return max_length
+end
+
+// A function responsible for calculating the 
+// tables dimensions based the banner (header text) and
+// and the table's data
+function calculate_dims(table_data, banner) {
+    // A variable to store the table's keys
+    DECLARE table_keys[] as string
+
+    // A variable to store the table's values
+    DECLARE table_keys[] as string
+
+    // Copy each key to table_keys array
+    // and each value to table_values array
+    // and use the get_max_length function
+    // to determine the max_key_length and
+    // max_value_length
+    foreach (key in table_data) {
+        COPY key to table_keys     
+    }    
+    
+    foreach (value in table_data) {
+        COPY value to table_values     
+    }
+
+    // Determine the length of the longest key and value
+    DECLARE max_key_length = get_max_length(table_keys)
+    DECLARE max_value_length = get_max_length(table_values)
+
+    // The minimum length of total whitespace in each table cell
+    DECLARE min_pad_length = 2
+
+    // The number of box characters in the header
+    DECLARE header_box_chars = 2
+   
+    // Determine the mininum header width
+    DECLARE min_header_width = 
+    header_box_chars + (pad_size * header_pads) + LENGTH(banner) 
+
+    // Determine the key column's min width
+    DECLARE min_key_column_width = max_key_length + min_pad_length
+    
+    // Determine the value column's min width
+    DECLARE min_value_column_width = max_value_length + min_pad_length
+
+    // The number of box characters per table row
+    DECLARE row_box_chars = 3
+
+    // Determine the minimum row width
+    DECLARE min_row_width = key_column_width + value_column_width + row_box_chars;
+
+    DECLARE final_header_width
+    DECLARE final_value_column_width
+
+    // If the header is width is less than the row width
+    // the final header width needs to increase to be the same
+    if (min_header_width < min_row_width) {
+        final_header_width = min_row_width
+    }
+
+    // If the row width is less than the header width
+    // the final value column width needs to be increased
+    if (min_header_width > min_row_width) {
+        min_key_column_width = min_header_width - min_key_column_width 
+    }
+
+    // Create a hashmap and populate with 
+    // the calculated dims
+    DECLARE table_dims as HashMap
+
+    dims["header_width"]=final_header_width
+    dims["key_column_width"]=key_column_width
+    dims["value_column_width"]=final_value_column_width
+
+    RETURN table_dims
+}
