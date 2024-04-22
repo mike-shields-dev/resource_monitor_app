@@ -44,9 +44,16 @@ $ cd src && ./main.sh
 ╚═════════════════════════╧════════════════════╝
 </pre>
 
-## Test
+## Testing
 
-The <a href="https://bats-core.readthedocs.io/en/stable/index.html">bats-core library</a> is used for testing
+The <a href="https://bats-core.readthedocs.io/en/stable/index.html">bats-core library</a> is used for testing.
+After cloning the project to your local machine, the necessary git submodules for the bats testing library need to be installed.
+
+To do this you run the following command:
+
+```bash
+$ git submodule update --init --recursive
+```
 
 To run the suite of tests, run the following command in the project's root directory
 
