@@ -1,38 +1,71 @@
 // Functions responsible for printing the table and it's 
 // data to the command line
 
-function print_header(table_dims)
-    // Using max_key_length and max_value_length,
-    // determine the table's width and print 
-    // the table header in the format:
+function print_header(table_dims, banner) {    
+    DECLARE content_width = table_dims["header_width"]
+
+    // Print top border
+    PRINT "\n"
+    PRINT "╔"
+    PRINT REPEAT("═", table_dims["header_width"])
+    PRINT "╗"
+
+    // Print side borders and content
+    PRINT "\n"
+    PRINT "║"
+    PRINT REPEAT(" ", table_dims["min_pad_length"])  
+    PRINT banner      
+    PRINT REPEAT(" ", content_width - LENGTH(banner))
+    PRINT "║"
     
-    // The number of horizontal box characters in the top border
-    // not including the corner box characters
-    DECLARE top_border_width = table_dims["header_width"] - 2
+    // Print bottom border
+    PRINT "\n"
+    PRINT "╠"
+    PRINT REPEAT("═", table_dims["key_column_width"])
+    PRINT "╤"
+    PRINT REPEAT("═", table_dims["value_column_width"])
+    PRINT "╣"
+}
 
-    PRINT "╔" + "═"
-    PRINT "║ header      ║"
+function print_row(table_dims, key, value) {    
+    // Print side borders, column contents and divider
     PRINT "\n"
-    PRINT "╠═════╤═══════╣"
-    PRINT "\n"
-end
+    PRINT "║" 
+    PRINT REPEAT(" ", table_dims["min_pad_length"])
+    PRINT key
+    PRINT REPEAT(" ", (key_column_width - LENGTH(key) - table_dims["min_pad_length"]))
+    PRINT "│"
+    PRINT REPEAT(" ", min_pad_length) 
+    PRINT value
+    PRINT REPEAT(" ", (value_column_width - LENGTH(value) - table_dims["min_pad_length"])) 
+    PRINT "║"
 
-function print_row(key, value, max_key_length, max_value_length)
-    // Using the max_key_length and max_value_length
-    // to determine the key column and value column widths
-    // print the table row in the format:
-    PRINT "║ key │ value ║"
+    // Print bottom border 
     PRINT "\n"
-    PRINT "╟─────┼───────╢"
-    PRINT "\n"
-end
+    PRINT "╟" 
+    PRINT REPEAT("─", table_dims["key_column_width"])
+    PRINT "┼"
+    PRINT REPEAT("─", table_dims["value_column_width"])
+    PRINT "╢"
+}
 
-function print_last_row(key, value, max_key_length, max_value_length)
-    // Using the max_key_length and max_value_length
-    // to determine the key column and value column widths
-    // and print the bottom border in the format:
-    PRINT "║ key │ value ║"
+function print_last_row(table_dims, key, value) {
+    // Print side borders, column contents and divider
     PRINT "\n"
-    PRINT "╚═════╧═══════╝"
+    PRINT "║"
+    PRINT REPEAT(" ", table_dims["min_pad_length"])
+    PRINT key 
+    PRINT REPEAT(" ", (key_column_width - LENGTH(key) - table_dims["min_pad_length"]))
+    PRINT "│" 
+    PRINT value 
+    PRINT REPEAT(" ", (value_column_width - LENGTH(value) - table_dims["min_pad_length"]))
+    PRINT "║"
+    
+    // Print bottom border
     PRINT "\n"
-end
+    PRINT "╚"
+    PRINT REPEAT("═", key_column_width)
+    PRINT "╧"
+    PRINT REPEAT("═", value_column_width)
+    PRINT "╝"
+}
