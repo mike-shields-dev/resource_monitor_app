@@ -1,58 +1,58 @@
 // Functions responsible for interogating the device/system 
 // for resource information
 
-function get_hostname() do
+function get_hostname() {
     DECLARE hostname 
     // Obtain the hostname from the System
     // using shell command and assign it to hostname
     return hostname
-end
+}
 
-function get_op_sys() do
+function get_op_sys() {
     // Obtain the operating system's name using shell commands
     return op_sys
-end
+}
 
-function get_task_count() do
+function get_task_count() {
     // Obtain the number of running tasks using shell commands
     return task_count
-end
+}
 
-function get_uptime() do
+function get_uptime() {
     // Obtain the up-time from the System using shell commands
     return uptime in the format "HH:MM" 
-end
+}
 
-function get_total_RAM() do
+function get_total_RAM() {
     // Obtain the total RAM in appropriate SI units from the System using shell commands
     return total_ram
-end
+}
 
-function get_free_RAM() do
+function get_free_RAM() {
     // Obtain the free RAM in appropriate SI units from the System using shell commands
     return free_RAM
-end
+}
 
-function get_disk_size() do
+function get_disk_size() {
     // Obtain the primary disk's total capacity in appropriate SI units
     using shell commands
     return disk_size
-end
+}
 
-function get_disk_space() do
+function get_disk_space() {
     // Obtain the primary disk's free space in appropriate SI units
     using shell commands
     return disk_space
-end
+}
 
-function get_IP_address() do
+function get_IP_address() {
     // Obtain the IP Address of the device's primary network interface
     // using shell commands
     return ip_address
-end
+}
 
-function get_IP_mode() do
+function get_IP_mode() {
     // Obtain the IP addressing mode of the primary network interface
     // using shell commands
     return ip_mode
-end
+}
