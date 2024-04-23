@@ -67,12 +67,12 @@ function get_disk_space() {
     )B"
 }
 
-function get_host_IP() {
+function get_IP_addr() {
     # get the primary network interface IP address
     hostname -I | awk '{print $1}'
 }
 
-function get_IP_addr_mode() {
+function get_IP_address_mode() {
     # get the IP addressing mode of the primary IP Address
     ip addr show scope global |
         grep "inet " |
@@ -113,25 +113,6 @@ function max_string_length() {
 # Prints the header including box-drawing character
 # based on the computed table dimensions
 function print_header() {
-    # top border
-    printf "╔"
-    printf "═%.0s" $(seq 1 "${header_inner_width}")
-    echo "╗"
-
-    # side borders and content
-    echo -n "║"
-    echo -n " "
-    echo -n "$header_text"
-    printf "%0.s " $(seq 1 $((header_inner_width - (${#header_text} + 1))))
-    echo "║"
-    echo -n "╠"
-    printf "═%.0s" $(seq 1 "$((key_column_inner_width))")
-    echo -n "╤"
-    printf "═%.0s" $(seq 1 "$((value_column_inner_width))")
-    echo "╣"
-}
-
-function print_centered_header() {
 
     local header_length=${#header_text}
     local padding=$(((header_inner_width - header_length) / 2))
@@ -150,7 +131,7 @@ function print_centered_header() {
 }
 
 # Prints all rows that are not the last row
-function print_row() {
+function print_intermediate_row() {
     index=$1
     key="${table_keys[index]}"
     value="${table_values[index]}"
@@ -247,21 +228,19 @@ function print_table() {
     calculate_table_dims
 
     # Print the table header
-    print_centered_header
+    print_header
 
     # Print the table rows
     for ((i = 0; i < ${#table_keys[@]}; i++)); do
         # not the last row
         if ((i < ${#table_keys[@]} - 1)); then
-            print_row "$i"
+            print_intermediate_row "$i"
         # the last row
         else
             print_last_row "$i"
         fi
     done
 }
-
-
 
 export key_column_inner_width
 export value_column_inner_width
@@ -282,8 +261,8 @@ export table_funcs=(
     get_free_RAM
     get_disk_size
     get_disk_space
-    get_host_IP
-    get_IP_addr_mode
+    get_IP_addr
+    get_IP_address_mode
 )
 
 # The list of table keys
@@ -303,14 +282,13 @@ export table_keys=(
 # A list to store the latest table values
 export table_values=()
 
-# The interval at which the table updates
-export refresh_interval_secs=10
-
 # The text that will be displayed in the table header
 export header_text="Adex System Resource Monitor"
 
 # the main function
 main() {
+    # The interval at which the table updates
+    export refresh_interval_secs=10
     # get the initial system information and update
     # the table's 0values
     update_table_values
