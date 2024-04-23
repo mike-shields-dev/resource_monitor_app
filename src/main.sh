@@ -1,173 +1,339 @@
 #!/bin/bash
 
-# shellcheck disable=SC1091
-source './utils/get_hostname.sh'
-source './utils/get_OS.sh'
-source './utils/get_num_tasks.sh'
-source './utils/get_uptime.sh'
-source './utils/get_free_RAM.sh'
-source './utils/get_disk_size.sh'
-source './utils/get_disk_space.sh'
-source './utils/get_host_IP.sh'
-source './utils/get_IP_mode.sh'
-source './utils/get_longest_string_length.sh'
-source './utils/print_header.sh'
-source './utils/print_row.sh'
-source './utils/print_row_separator.sh'
-source './utils/print_bottom_border.sh'
+# GETTER FUNCTIONS:
+# These functions interogate the system
+# for the table's values
 
-print_table() {
-    # An array containing the names of table keys (odd indexes)
-    # and refs to the table value getter functions (even indexes)
-    # (see the for-loop below)
-    table_padding=1
-    table_header_text="System Information"
-    table_data=(
-        "Host Name" get_hostname
-        "Operating System" get_OS
-        "Running Tasks" get_num_tasks
-        "System Up-Time" get_uptime
-        "Available RAM" get_free_RAM
-        "Total Disk Space" get_disk_size
-        "Free Disk Space" get_disk_space
-        "Host IP Address" get_host_IP
-        "IP Addressing Mode" get_IP_mode
-    )
+function get_hostname() {
+    # return the device's hostname
+    hostname
+}
 
-    # temporary arrays that hold the table's
-    # keys and values to be passed to the
-    # get_longest_string_length function
-    local table_keys=()
-    local table_values=()
+function get_OS() {
+    # return the device operating system
+    lsb_release -d |
+        awk '{ for(i=2; i<=NF; i++) printf "%s ", $i }'
+}
 
-    # populate the table_keys and table_values arrays
-    for ((i = 0; i < ${#table_data[@]}; i += 2)); do
-        # extract the table key
-        table_keys+=("${table_data[i]}")
-        # execute the table value getter function
-        table_values+=("$("${table_data[i + 1]}")")
+function get_num_tasks() {
+    # return the number of running task or processes
+    echo $(($(ps -e | wc -l) - 1))
+}
+
+function get_uptime() {
+    # Get the system uptime in seconds
+    uptime_seconds=$(cut -d' ' -f1 /proc/uptime | cut -d'.' -f1)
+
+    # Calculate the hours and minutes
+    hours=$((uptime_seconds / 3600))
+    minutes=$((uptime_seconds % 3600 / 60))
+
+    # Format the output as HH:MM
+    formatted_uptime=$(printf "%02dh:%02dm" $hours $minutes)
+
+    echo "$formatted_uptime"
+}
+
+function get_total_RAM() {
+    # get the total amount of RAM
+    # in the most appropriate human-readable SI units
+    echo "$(free -h --si | awk 'NR==2 {print $2}')B"
+}
+
+function get_free_RAM() {
+    # get the amount of free RAM
+    # in the most appropriate human readabl SI units
+    echo "$(
+        free -h --si |
+            awk 'NR==2 {print $4}'
+    )B"
+}
+
+function get_disk_size() {
+    # get the total disk size in GB
+    echo "$(
+        df -h --si / --output=size |
+            tail -n 1 |
+            tr -d '[:space:]'
+    )B"
+}
+
+function get_disk_space() {
+    # get amount of free disk space in GB
+    echo "$(
+        df -h --si / --output=avail |
+            tail -n 1 |
+            tr -d '[:space:]'
+    )B"
+}
+
+function get_host_IP() {
+    # get the primary network interface IP address
+    hostname -I | awk '{print $1}'
+}
+
+function get_IP_addr_mode() {
+    # get the IP addressing mode of the primary IP Address
+    ip addr show scope global |
+        grep "inet " |
+        awk '{print $7}' |
+        sed -e 's/.*/\u&/'
+}
+
+# Runs each table value getter function and
+# updates the table_values list
+function update_table_values() {
+    # updates the table values using the
+    # getter functions defined above
+    # loop the table_data array and print each row
+    for ((i = 0; i < ${#table_funcs[@]}; i++)); do
+        func="${table_funcs[i]}"
+        table_values[i]="$($func)"
+    done
+}
+
+# A function that returns the maximum string length
+# in a list of strings
+function max_string_length() {
+    local strings_arr=("${!1}") # Expand the provided array of strings
+    local longest
+
+    for string in "${strings_arr[@]}"; do # Iterate over array elements
+        # if the current string's length is longer
+        # update max_length
+        if [[ ${#string} -gt ${#longest} ]]; then
+            longest="$string"
+        fi
     done
 
-    # get the longest table key and table value lengths
-    local longest_key_length
-    longest_key_length=$(($(get_longest_string_length table_keys[@])))
-    local longest_value_length
-    longest_value_length=$(($(get_longest_string_length table_values[@])))
+    echo "${#longest}"
+}
+
+# PRINTING FUNCTIONS
+# Prints the header including box-drawing character
+# based on the computed table dimensions
+function print_header() {
+    # top border
+    printf "╔"
+    printf "═%.0s" $(seq 1 "${header_inner_width}")
+    echo "╗"
+
+    # side borders and content
+    echo -n "║"
+    echo -n " "
+    echo -n "$header_text"
+    printf "%0.s " $(seq 1 $((header_inner_width - (${#header_text} + 1))))
+    echo "║"
+    echo -n "╠"
+    printf "═%.0s" $(seq 1 "$((key_column_inner_width))")
+    echo -n "╤"
+    printf "═%.0s" $(seq 1 "$((value_column_inner_width))")
+    echo "╣"
+}
+
+function print_centered_header() {
+
+    local header_length=${#header_text}
+    local padding=$(((header_inner_width - header_length) / 2))
+
+    printf "╔"
+    printf "═%.0s" $(seq 1 "$header_inner_width")
+    printf "╗"
+    printf "\n"
+    printf "║"
+    printf "%*s" $((padding + header_length)) "$header_text"
+    printf "%*s" $((header_inner_width - padding - header_length)) ""
+    printf "║\n"
+    printf "╠"
+    printf "═%.0s" $(seq 1 "$header_inner_width")
+    printf "╣\n"
+}
+
+# Prints all rows that are not the last row
+function print_row() {
+    index=$1
+    key="${table_keys[index]}"
+    value="${table_values[index]}"
+    # Print the row with formatted key and value
+    echo -n "║ "
+    echo -n "$key"
+    # Pad the right side of the key column
+    printf "%*s" $((key_column_inner_width - ${#key} - 1)) ""
+    echo -n "│"
+    echo -n " "
+    echo -n "$value"
+    printf "%0.s " $(seq 1 $((value_column_inner_width - ${#value} - 1)))
+    echo "║"
+
+    # Print bottom border
+    echo -n "╟"
+    printf "─%.0s" $(seq 1 "${key_column_inner_width}")
+    echo -n "┼"
+    printf "─%.0s" $(seq 1 "${value_column_inner_width}")
+    echo "╢"
+}
+
+# Prints the last row
+function print_last_row() {
+    index=$1
+    key="${table_keys[index]}"
+    value="${table_values[index]}"
+    # Print the row with formatted key and value
+    echo -n "║"
+    echo -n " "
+    echo -n "${table_keys[index]}"
+    printf "%*s" $((key_column_inner_width - ${#key} - 1)) ""
+    echo -n "│"
+    echo -n " "
+    echo -n "${table_values[index]}"
+    printf "%0.s " $(seq 1 $((value_column_inner_width - ${#value} - 1)))
+    echo "║"
+
+    # Print bottom border
+    echo -n "╚"
+    printf "═%.0s" $(seq 1 "${key_column_inner_width}")
+    echo -n "╧"
+    printf "═%.0s" $(seq 1 "${value_column_inner_width}")
+    echo "╝"
+}
+
+function calculate_table_dims() {
+    update_table_values
+
+    # Determine the longest table key
+    longest_key_length=$(max_string_length table_keys[@])
+
+    # Determine the longest table value
+    longest_value_length=$(max_string_length table_values[@])
+
+    # Determine the internal width of the table's key column
+    # "+ 2" represents the padding either side of the key
+    key_column_inner_width=$((longest_key_length + 2))
+
+    # Determine the internal width of the table's value column
+    # "+ 2" represents the padding either side of the key
+    value_column_inner_width=$((longest_value_length + 2))
+
+    # Determine the internal width of rows in the table
+    # the "1" in the equation represents the box drawing character that
+    # divides the table's columns
+    row_inner_width=$((key_column_inner_width + 1 + value_column_inner_width))
+
+    # Determine the interal width of the table's header
+    # "+ 2" represents the padding either side of the key
+    header_inner_width=$((${#header_text} + 2))
+
+    # Conditional statements that eliminate any width differences
+    # between the header and rows so that
+    # the table's alignment is maintained if it's contents change
+    if ((header_inner_width < row_inner_width)); then
+        header_inner_width=$row_inner_width
+    fi
+
+    if ((header_inner_width > row_inner_width)); then
+        value_column_inner_width=$((header_inner_width - key_column_inner_width - 1))
+    fi
+}
+
+# Prints the table
+# this function is also responsible for calculating the
+# table's dimensions based on the lengths of:
+# - table header banner
+# - longest table key
+# - longest table value
+function print_table() {
+    update_table_values
+
+    calculate_table_dims
 
     # Print the table header
-    print_header $longest_key_length $longest_value_length "$table_header_text" $table_padding
+    print_centered_header
 
-    # loop the table_data array and print each row
-    for ((i = 0; i < ${#table_data[@]}; i += 2)); do
-        # get the table key
-        key="${table_data[i]}"
-        # execute table value getter
-        value=$("${table_data[i + 1]}")
-
-        # print key and value in the row
-        print_row "$key" "$value" $longest_key_length $longest_value_length $table_padding
-
-        # if the row is not the last row
-        if [ $i -lt $((${#table_data[@]} - 2)) ]; then
-            # append the row with the row separator
-            print_row_separator $longest_key_length $longest_value_length $table_padding
+    # Print the table rows
+    for ((i = 0; i < ${#table_keys[@]}; i++)); do
+        # not the last row
+        if ((i < ${#table_keys[@]} - 1)); then
+            print_row "$i"
+        # the last row
         else
-            # append the row with the bottom border
-            print_bottom_border $longest_key_length $longest_value_length $table_padding
+            print_last_row "$i"
         fi
     done
 }
 
-# table values cached at the time of the last table update
-# they are used to determine if the table should update
-# when the update interval has elapsed
-# (initialised with the current system values)
-prev_host_name=$(get_hostname)
-prev_OS=$(get_OS)
-prev_num_tasks=$(get_num_tasks)
-prev_free_RAM=$(get_free_RAM)
-prev_disk_size=$(get_disk_size)
-prev_disk_space=$(get_disk_space)
-prev_IP_address=$(get_host_IP)
-prev_IP_mode=$(get_IP_mode)
 
-# the last time that the table was updated
-# initialised with the time the script was started
-update_timestamp=$(date +%s)
-# interval in seconds after which the table should check for updates
-update_interval_secs=10
+
+export key_column_inner_width
+export value_column_inner_width
+export header_inner_width
+
+# !! IMPORTANT:
+# Ensure the proper sequential relationship between
+# the table's keys and getter functions is
+# maintained.
+
+# A list of references to the getter functions
+export table_funcs=(
+    get_hostname
+    get_OS
+    get_num_tasks
+    get_uptime
+    get_total_RAM
+    get_free_RAM
+    get_disk_size
+    get_disk_space
+    get_host_IP
+    get_IP_addr_mode
+)
+
+# The list of table keys
+export table_keys=(
+    "Host Name"
+    "Operating System"
+    "Running Tasks"
+    "System Up-Time"
+    "Total RAM"
+    "Available RAM"
+    "Total Disk Space"
+    "Free Disk Space"
+    "Host IP Address"
+    "IP Addressing Modes"
+)
+
+# A list to store the latest table values
+export table_values=()
+
+# The interval at which the table updates
+export refresh_interval_secs=10
+
+# The text that will be displayed in the table header
+export header_text="Adex System Resource Monitor"
 
 # the main function
 main() {
+    # get the initial system information and update
+    # the table's 0values
+    update_table_values
+
     # print the table the first time
+    # with the current table values
     print_table
 
     # an infinite loop that updates and prints the table,
     # while the script is running
     while true; do
-        # get the current time at each iteration
-        local current_time
-        current_time=$(date +%s)
+        # update the table values
+        update_table_values
 
-        # calculate the amount of time that has elapsed since
-        # the last time the table updated
-        local elapsed_time=$((current_time - update_timestamp))
+        # clear the previously displayed table
+        clear
 
-        # if the amount of time elapsed since the last table update
-        # exceeds the specified update interval
-        if ((elapsed_time > update_interval_secs)); then
-            # get the current system information
-            local curr_hostname
-            curr_hostname=$(get_hostname)
-            local curr_OS
-            curr_OS=$(get_OS)
-            local curr_num_tasks
-            curr_num_tasks=$(get_num_tasks)
-            local curr_uptime=$(get_uptime)
-            local curr_free_RAM
-            curr_free_RAM=$(get_free_RAM)
-            local curr_disk_size
-            curr_disk_size=$(get_disk_size)
-            local curr_disk_space
-            curr_disk_space=$(get_disk_space)
-            local curr_IP_address
-            curr_IP_address=$(get_host_IP)
-            local curr_IP_mode
-            curr_IP_mode=$(get_IP_mode)
+        # print the table with the latest
+        # table values
+        print_table
 
-            # compare the current system information against
-            # the previous cache
-            # run an update if there are any differences
-            if [[ 
-                "$curr_hostname" != "$prev_host_name" ||
-                "$curr_OS" != "$prev_OS" ||
-                "$curr_num_tasks" != "$prev_num_tasks" ||
-                "$curr_free_RAM" != "$prev_free_RAM" ||
-                "$curr_disk_size" != "$prev_disk_size" ||
-                "$curr_disk_space" != "$prev_disk_space" ||
-                "$curr_IP_address" != "$prev_IP_address" ||
-                "$curr_IP_mode" != "$prev_IP_mode" ]]; then
-
-                # clear the previously displayed table
-                clear
-
-                # print the updated table
-                print_table
-
-                # update the cached system values
-                prev_host_name=$curr_hostname
-                prev_OS=$curr_OS
-                prev_num_tasks=$curr_num_tasks
-                prev_free_RAM=$curr_free_RAM
-                prev_disk_size=$curr_disk_size
-                prev_disk_space=$curr_disk_space
-                prev_IP_address=$curr_IP_address
-                prev_IP_mode=$curr_IP_mode
-
-                # update the timestamp with the current time
-                update_timestamp=$current_time
-            fi
-        fi
+        # wait for the designated duration
+        sleep "$refresh_interval_secs"
     done
 }
 
