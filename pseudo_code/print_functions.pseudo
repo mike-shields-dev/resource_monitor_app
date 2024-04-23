@@ -49,7 +49,7 @@ function print_row(table_dims, key, value) {
     PRINT "╢"
 }
 
-function print_last_row(table_dims, key, value) {
+function print_last_row(table_dims, row_data[2] as string) {
     // Print side borders, column contents and divider
     PRINT "\n"
     PRINT "║"
@@ -68,4 +68,22 @@ function print_last_row(table_dims, key, value) {
     PRINT "╧"
     PRINT REPEAT("═", value_column_width)
     PRINT "╝"
+}
+
+function print_rows(table_dims, table_data) {
+    foreach (index = 0...LENGTH(table_data)) {
+        DECLARE row_data = table_data[index]
+        if(index < LENGTH(table_data) - 1) {
+            print_row(row_data, table_dims)
+        } else {
+            print_last_row(row_data, table_dims) 
+        }
+    }
+}
+
+function print_table(table_data, banner) {   
+    DECLARE table_dims as hashmap = calculate_dims(banner, table_data)
+    
+    print_header(table_dims, banner)
+    print_rows(table_dims, table_data)
 }

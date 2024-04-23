@@ -2,7 +2,6 @@
 // for resource information
 
 function get_hostname() {
-    DECLARE hostname 
     // Obtain the hostname from the System
     // using shell command and assign it to hostname
     return hostname

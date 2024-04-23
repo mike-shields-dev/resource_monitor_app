@@ -50,7 +50,6 @@ function calculate_dims(table_data, banner) {
     DECLARE row_width = 
         key_column_width + 
         value_column_width + 
-        (pad_length * 4) + 
         1 // Represents the box character separating columns  
 
     DECLARE final_header_width
@@ -78,4 +77,18 @@ function calculate_dims(table_data, banner) {
     dims["min_pad_length"]=min_pad_length
     
     RETURN table_dims
+}
+
+// A function that iterates the list of table value getter
+// and returns the result of each function as a list 
+function get_table_values(table_funcs[] as function) {
+    DECLARE table_values[] as string
+    
+    for (i = 0...LENGTH(table_funcs)) do
+        DECLARE func = table_funcs[i]
+        DECLARE value = func()
+        table_values[i] = value
+    end
+
+    return table_values
 }

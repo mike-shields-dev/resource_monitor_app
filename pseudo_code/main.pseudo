@@ -1,0 +1,211 @@
+// Declare and define getter functions
+// that will interogate the system for
+// resource information
+
+// retrieve the device's host name
+FUNCTION get_hostname
+// retrieve the device's operating system name
+FUNCTION get_OS_name 
+// retrieve the number of running processes (global)
+FUNCTION get_number_of_tasks
+// retrieve the amount of time elapsed since the 
+// the device was booted up in the format HH:MM 
+FUNCTION get_uptime
+// retrieve the total amount of RAM
+// in the most appropriate SI units
+FUNCTION get_total_RAM
+// retrieve the amount of free RAM
+// in the most appropriate SI units
+FUNCTION get_free_RAM
+// retrieve the disk capacity 
+// in the most appropriate SI units
+FUNCTION get_disk_size
+// retrieve the free disk space
+// in the most approprate SI units
+FUNCTION get_disk_space
+// retrieve the IP Address of the 
+// primary network interface 
+FUNCTION get_IP_address
+// retrieve the IP Addressing mode
+// of the primary network interface
+FUNCTION get_IP_address_mode
+
+// Declare an iterable data structure to 
+// store references to the getter functions
+DECLARE table_funcs[] as function
+
+// Populate table_funcs
+table_funcs[0]=get_hostname
+table_funcs[1]=get_OS_name
+table_funcs[2]=get_number_of_tasks
+table_funcs[3]=get_uptime
+table_funcs[4]=get_total_RAM
+table_funcs[5]=get_free_RAM
+table_funcs[6]=get_disk_size
+table_funcs[7]=get_disk_space
+table_funcs[8]=get_IP_address
+table_funcs[9]=get_IP_addr_mode
+
+// Declare an iterable data structure to 
+// store the table's keys
+DECLARE table_keys[] as string
+
+// Populate table_keys ensuring proper 
+// sequential correlation with table_funcs
+table_keys[0]="Host Name"
+table_keys[1]="Operating System"
+table_keys[2]="Running Tasks"
+table_keys[3]="System Up-Time"
+table_keys[4]="Total RAM"
+table_keys[5]="Available RAM"
+table_keys[6]="Total Disk Space"
+table_keys[7]="Free Disk Space"
+table_keys[8]="Host IP Address"
+table_keys[9]="IP Addressing Modes"
+
+// Declare an iterable data structure to 
+// store a the table's values
+DECLARE table_values[] as string 
+
+// Declare and define a function that
+// iterates table_funcs
+// executes each function and 
+// and uses the iteration index to set
+// the corresponding value in table_values
+FUNCTION update_table_values
+
+// Invoke update_table_values
+// to populate table_values to get the
+// device's initial state
+update_table_values()
+
+// Declare a variable to store the 
+// the text to be displayed in the 
+// table's header
+DECLARE header_text = "Adex System Resource Monitor"
+
+// NOTE: In order for the table to
+// print "responsively" in accordance with 
+// it's contents, some critical dimensions 
+// must be calculated
+
+// Declare variables to store
+// the required dimensions
+DECLARE header_inner_width
+DECLARE key_column_inner_width
+DECLARE value_column_inner_width
+
+// Declare and define a function 
+// that calculates and defines:
+// - header_inner_width
+// - key_column_inner_width
+// - value_column_inner_width
+
+// The function will use the following 
+// variables to achieve this:
+// - header_text
+// - table_keys
+// - table_values
+
+DECLARE FUNCTION calculate_table_dims
+
+// Invoke the calculate_table_dims
+calculate_table_dims()
+
+// Now that all the information required to 
+// print the table is available
+
+// Declare a function that prints
+// the table header with the following format:
+
+// ╔═════════════════╗
+// ║  <header_text>  ║
+// ╠═══════╤═════════╣
+//   <key>   <value> 
+
+// Above, the key and value are depicted to show
+// key_column_inner_width and value_column_inner_width
+// will be required to properly display the header's 
+// bottom border 
+FUNCTION print_header
+
+// DECLARE a function that prints an intermediate row.
+// The function will accept an index parameter, 
+// to access corresponding elements in: 
+// - table_keys 
+// - table_rows
+
+// and use:
+// - key_column_inner_width 
+// - value_column_inner_width 
+
+// to print the row in the following format:
+
+// ║ <key> │ <value> ║
+// ╟───────┼─────────╢
+
+FUNCTION print_intermediate_row(index : integer)
+
+// DECLARE a function that prints the last row.
+// The function will accept an index parameter, 
+// to access corresponding elements in:
+// - table_keys
+// - table_rows
+
+// and use:
+// - key_column_inner_width
+// - value_column_inner_width
+
+// to print the row in the following format:
+
+// ║ <key> │ <value> ║
+// ╚═══════╧═════════╝
+
+FUNCTION print_last_row(index : integer)
+
+// DECLARE a function that prints the entire table
+// by invoking the functions:
+// - print_header
+// - print_intermediate_row
+// - print_last_row
+
+// The function will first print the header, 
+// then iterate the length of 
+// any of the iterable data structures
+// as they should all be of equal length: 
+// - table_keys
+// - table_data
+// - table_values
+
+// and determine whether to print an 
+// intermediate row or the last row
+FUNCTION print_table
+
+function main() {
+    // Declare and define the interval in seconds
+    // after which the table will be updated
+    DECLARE update_interval_secs = 10
+    
+    // A infinite while loop
+    WHILE true: DO
+        // Delay continuation of the loop for
+        // the specified duration
+        WAIT update_interval_secs
+        
+        // Update table_values with the current
+        // machine state
+        update_table_values()
+
+        // Recalculate the table's dimensions
+        calculate_table_dims()
+
+        CLEAR_SCREEN
+
+        // Print the updated table
+        print_table()
+    END
+}
+
+// Invoke the main function to start the 
+// application
+main()
