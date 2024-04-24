@@ -315,5 +315,9 @@ main() {
     done
 }
 
-# start the app
-main
+# Check if being sourced
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    # This block will only execute if the file is executed, not sourced
+    # start the app
+    main
+fi
