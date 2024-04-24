@@ -22,7 +22,7 @@ function get_num_tasks() {
 
 function get_uptime() {
     # Get the system uptime in seconds
-    uptime_seconds=$(cut -d' ' -f1 /proc/uptime | cut -d'.' -f1)
+    uptime_seconds=$(awk -F'.' '{print $1}' /proc/uptime)
 
     # Calculate the hours and minutes
     hours=$((uptime_seconds / 3600))
