@@ -276,7 +276,7 @@ export table_keys=(
     "Total Disk Space"
     "Free Disk Space"
     "Host IP Address"
-    "IP Addressing Modes"
+    "IP Addressing Mode"
 )
 
 # A list to store the latest table values
