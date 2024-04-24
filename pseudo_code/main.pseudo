@@ -4,28 +4,37 @@
 
 // retrieve the device's host name
 FUNCTION get_hostname
+
 // retrieve the device's operating system name
 FUNCTION get_OS_name 
+
 // retrieve the number of running processes (global)
 FUNCTION get_number_of_tasks
+
 // retrieve the amount of time elapsed since the 
 // the device was booted up in the format HH:MM 
 FUNCTION get_uptime
+
 // retrieve the total amount of RAM
 // in the most appropriate SI units
 FUNCTION get_total_RAM
+
 // retrieve the amount of free RAM
 // in the most appropriate SI units
 FUNCTION get_free_RAM
+
 // retrieve the disk capacity 
 // in the most appropriate SI units
 FUNCTION get_disk_size
+
 // retrieve the free disk space
 // in the most approprate SI units
 FUNCTION get_disk_space
+
 // retrieve the IP Address of the 
 // primary network interface 
 FUNCTION get_IP_address
+
 // retrieve the IP Addressing mode
 // of the primary network interface
 FUNCTION get_IP_address_mode
@@ -75,8 +84,8 @@ DECLARE table_values[] as string
 FUNCTION update_table_values
 
 // Invoke update_table_values
-// to populate table_values to get the
-// device's initial state
+// to populate table_values with 
+// the initial system state
 update_table_values()
 
 // Declare a variable to store the 
@@ -88,9 +97,8 @@ DECLARE header_text = "Adex System Resource Monitor"
 // print "responsively" in accordance with 
 // it's contents, some critical dimensions 
 // must be calculated
-
 // Declare variables to store
-// the required dimensions
+// the required table dimensions
 DECLARE header_inner_width
 DECLARE key_column_inner_width
 DECLARE value_column_inner_width
@@ -100,13 +108,11 @@ DECLARE value_column_inner_width
 // - header_inner_width
 // - key_column_inner_width
 // - value_column_inner_width
-
 // The function will use the following 
 // variables to achieve this:
 // - header_text
 // - table_keys
 // - table_values
-
 DECLARE FUNCTION calculate_table_dims
 
 // Invoke the calculate_table_dims
@@ -114,19 +120,15 @@ calculate_table_dims()
 
 // Now that all the information required to 
 // print the table is available
-
 // Declare a function that prints
 // the table header with the following format:
-
 // ╔═════════════════╗
 // ║  <header_text>  ║
 // ╠═══════╤═════════╣
 //   <key>   <value> 
-
-// Above, the key and value are depicted to show
-// key_column_inner_width and value_column_inner_width
-// will be required to properly display the header's 
-// bottom border 
+// Above, the column contents are depicted to show
+// that their dimension will be required
+// to properly display the header's bottom border.
 FUNCTION print_header
 
 // DECLARE a function that prints an intermediate row.
@@ -134,16 +136,12 @@ FUNCTION print_header
 // to access corresponding elements in: 
 // - table_keys 
 // - table_rows
-
 // and use:
 // - key_column_inner_width 
 // - value_column_inner_width 
-
 // to print the row in the following format:
-
 // ║ <key> │ <value> ║
 // ╟───────┼─────────╢
-
 FUNCTION print_intermediate_row(index : integer)
 
 // DECLARE a function that prints the last row.
@@ -151,16 +149,12 @@ FUNCTION print_intermediate_row(index : integer)
 // to access corresponding elements in:
 // - table_keys
 // - table_rows
-
 // and use:
 // - key_column_inner_width
 // - value_column_inner_width
-
 // to print the row in the following format:
-
 // ║ <key> │ <value> ║
 // ╚═══════╧═════════╝
-
 FUNCTION print_last_row(index : integer)
 
 // DECLARE a function that prints the entire table
@@ -168,7 +162,6 @@ FUNCTION print_last_row(index : integer)
 // - print_header
 // - print_intermediate_row
 // - print_last_row
-
 // The function will first print the header, 
 // then iterate the length of 
 // any of the iterable data structures
