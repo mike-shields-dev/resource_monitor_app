@@ -43,22 +43,3 @@ $ cd src && ./main.sh
 ║ IP Addressing Mode:     │                    ║
 ╚═════════════════════════╧════════════════════╝
 </pre>
-
-## Testing
-
-The <a href="https://bats-core.readthedocs.io/en/stable/index.html">bats-core library</a> is used for testing. All test files are located in the test directory.
-
-
-After cloning the project to your local machine, the necessary git submodules for the bats testing library need to be installed.
-
-To do this you run the following command:
-
-```bash
-$ git submodule update --init --recursive
-```
-
-To run the suite of tests, run the following command in the project's root directory
-
-```bash
-$ ./run_all_tests.sh
-```
