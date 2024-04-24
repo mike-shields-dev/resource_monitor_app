@@ -37,7 +37,15 @@ function get_uptime() {
 function get_total_RAM() {
     # get the total amount of RAM
     # in the most appropriate human-readable SI units
-    echo "$(free -h --si | awk 'NR==2 {print $2}')B"
+    ram_kB=$(grep “MemTotal:” /proc/meminfo | awk ‘{print $2}’)
+
+    units=('KB' 'MB' 'GB' 'TB' 'PB' 'EB' 'ZB' 'YB')
+    unit_index=0
+    while [ $kb -ge 1024 ] && [ $unit_index -lt ${#units[@]} ]; do
+        kb=$((kb/1024))
+        unit_index=$((unit_index+1))
+    done
+    echo "$kb ${units[$unit_index]}"
 }
 
 function get_free_RAM() {
