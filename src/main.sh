@@ -51,10 +51,7 @@ function get_total_RAM() {
 function get_free_RAM() {
     # get the amount of free RAM
     # in the most appropriate human readabl SI units
-    echo "$(
-        free -h --si |
-            awk 'NR==2 {print $4}'
-    )B"
+    grep “MemFree:” /proc/meminfo | awk ‘{print $2}’
 }
 
 function get_disk_size() {
