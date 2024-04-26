@@ -1,4 +1,4 @@
-#!/bin/bash
+bin/bash
 
 # GETTER FUNCTIONS:
 # These functions interrogate the system
@@ -37,14 +37,17 @@ function get_uptime() {
 function get_total_RAM() {
     # get the total amount of RAM
     # in the most appropriate human-readable SI units
-    RAM_KB=$(grep 'MemTotal:' /proc/meminfo | awk '{print $2}')
-    echo $(KB_to_SI_units "$RAM_KB")
+    # "B" stands for byte
+    memory=$(free -h --si | grep "Mem" | awk '{print $3}')B
+    echo "$memory"
 }
 
 function get_free_RAM() {
-    # get the amount of free RAM in 
+    # get the amount of free RAM in
     # the most appropriate human-readable SI units
-    RAM_KB=$(grep 'MemFree:' /proc/meminfo | awk '{print $2}')
+    # "B" stands for byte
+    memory=$(free -h --si | grep "Mem" | awk '{print $2}')B
+    echo "$memory"
 }
 
 function get_disk_size() {
@@ -88,26 +91,6 @@ function update_table_values() {
         func="${table_funcs[i]}"
         table_values[i]="$($func)"
     done
-}
-
-# A function that determines the most appropriate SI units
-# to display a kB value according to its magnitude
-function KB_to_SI_units() {
-    # The provided value in KBs
-    value="$1"
-    # The array of SI units
-    units=('KB' 'MB' 'GB' 'TB' 'PB' 'EB' 'ZB' 'YB')
-    # The index used to select the appropriate SI units
-    unit_index=0
-    # The while loop divides the initial value by 1024
-    # and increases the unit_index by 1
-    # which results in the appropriate value and SI units 
-    while [ $(( value >= 1024 )) ] && [ $(( unit_index < ${#units[@]} )) ]; do
-        value=$((value/1024))
-        unit_index=$((unit_index+1))
-    done
-    # Return the value and units
-    echo "$value ${units[$unit_index]}"
 }
 
 # A function that returns the maximum string length
