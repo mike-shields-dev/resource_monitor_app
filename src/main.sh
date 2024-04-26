@@ -37,7 +37,7 @@ function get_uptime() {
 function get_total_RAM() {
     # get the total amount of RAM
     # in the most appropriate human-readable SI units
-    ram_kB=$(grep 'MemTotal:' /proc/meminfo | awk '{print "$2"}')
+    ram_kB=$(grep 'MemTotal:' /proc/meminfo | awk '{print $2}')
 
     units=('KB' 'MB' 'GB' 'TB' 'PB' 'EB' 'ZB' 'YB')
     unit_index=0
