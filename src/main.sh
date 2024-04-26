@@ -118,14 +118,13 @@ function print_header() {
     local header_length=${#header_text}
     local padding=$(((header_inner_width - header_length) / 2))
 
-    printf "╔"
+    echo -n "╔"
     printf "═%.0s" $(seq 1 "$header_inner_width")
-    printf "╗"
-    printf "\n"
+    echo "╗"
     printf "║"
     printf "%*s" $((padding + header_length)) "$header_text"
     printf "%*s" $((header_inner_width - padding - header_length)) ""
-    printf "║\n"
+    echo "║"
     printf "╠"
     printf "═%.0s" $(seq 1 "$header_inner_width")
     printf "╣\n"
