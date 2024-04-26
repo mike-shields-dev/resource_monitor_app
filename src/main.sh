@@ -11,8 +11,7 @@ function get_hostname() {
 
 function get_OS() {
     # return the device's operating system
-    lsb_release -d |
-        awk '{ for(i=2; i<=NF; i++) printf "%s ", $i }'
+    lsb_release -d | cut -f2-
 }
 
 function get_num_tasks() {
@@ -121,13 +120,16 @@ function print_header() {
     echo -n "╔"
     printf "═%.0s" $(seq 1 "$header_inner_width")
     echo "╗"
-    printf "║"
+    echo -n "║"
     printf "%*s" $((padding + header_length)) "$header_text"
     printf "%*s" $((header_inner_width - padding - header_length)) ""
     echo "║"
-    printf "╠"
-    printf "═%.0s" $(seq 1 "$header_inner_width")
-    printf "╣\n"
+        # Print bottom border
+    echo -n "╠"
+    printf "═%.0s" $(seq 1 "${key_column_inner_width}")
+    echo -n "╤"
+    printf "═%.0s" $(seq 1 "${value_column_inner_width}")
+    echo "╣"
 }
 
 # Prints all rows that are not the last row
@@ -140,8 +142,7 @@ function print_intermediate_row() {
     echo -n "$key"
     # Pad the right side of the key column
     printf "%*s" $((key_column_inner_width - ${#key} - 1)) ""
-    echo -n "│"
-    echo -n " "
+    echo -n "│ "
     echo -n "$value"
     printf "%0.s " $(seq 1 $((value_column_inner_width - ${#value} - 1)))
     echo "║"
@@ -160,13 +161,11 @@ function print_last_row() {
     key="${table_keys[index]}"
     value="${table_values[index]}"
     # Print the row with formatted key and value
-    echo -n "║"
-    echo -n " "
-    echo -n "${table_keys[index]}"
+    echo -n "║ "
+    echo -n "$key"
     printf "%*s" $((key_column_inner_width - ${#key} - 1)) ""
-    echo -n "│"
-    echo -n " "
-    echo -n "${table_values[index]}"
+    echo -n "│ "
+    echo -n "$value"
     printf "%0.s " $(seq 1 $((value_column_inner_width - ${#value} - 1)))
     echo "║"
 
