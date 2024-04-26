@@ -51,11 +51,7 @@ function get_free_RAM() {
 
 function get_disk_size() {
     # get the total disk size in GB
-    echo "$(
-        df -h --si / --output=size |
-            tail -n 1 |
-            tr -d '[:space:]'
-    )B"
+    echo $(df -h -si --total | awk 'END {print $2}')
 }
 
 function get_disk_space() {
