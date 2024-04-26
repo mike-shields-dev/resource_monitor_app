@@ -42,7 +42,7 @@ function get_total_RAM() {
     units=('KB' 'MB' 'GB' 'TB' 'PB' 'EB' 'ZB' 'YB')
     unit_index=0
     while [ $(( ram_kB >= 1024 )) ] && [ $(( unit_index < ${#units[@]} )) ]; do
-        kb=$((kb/1024))
+        ram_kB=$((ram_kB/1024))
         unit_index=$((unit_index+1))
     done
     echo "$ram_kB ${units[$unit_index]}"
