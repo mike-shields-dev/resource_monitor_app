@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # GETTER FUNCTIONS:
-# These functions interogate the system
+# These functions interrogate the system
 # for the table's values
 
 function get_hostname() {
@@ -10,7 +10,7 @@ function get_hostname() {
 }
 
 function get_OS() {
-    # return the device operating system
+    # return the device's operating system
     lsb_release -d |
         awk '{ for(i=2; i<=NF; i++) printf "%s ", $i }'
 }
@@ -37,21 +37,14 @@ function get_uptime() {
 function get_total_RAM() {
     # get the total amount of RAM
     # in the most appropriate human-readable SI units
-    ram_kB=$(grep 'MemTotal:' /proc/meminfo | awk '{print $2}')
-
-    units=('KB' 'MB' 'GB' 'TB' 'PB' 'EB' 'ZB' 'YB')
-    unit_index=0
-    while [ $(( ram_kB >= 1024 )) ] && [ $(( unit_index < ${#units[@]} )) ]; do
-        ram_kB=$((ram_kB/1024))
-        unit_index=$((unit_index+1))
-    done
-    echo "$ram_kB ${units[$unit_index]}"
+    RAM_KB=$(grep 'MemTotal:' /proc/meminfo | awk '{print $2}')
+    echo $(KB_to_SI_units "$RAM_KB")
 }
 
 function get_free_RAM() {
-    # get the amount of free RAM
-    # in the most appropriate human readabl SI units
-    grep 'MemFree:' /proc/meminfo | awk '{print $2}'
+    # get the amount of free RAM in 
+    # the most appropriate human-readable SI units
+    RAM_KB=$(grep 'MemFree:' /proc/meminfo | awk '{print $2}')
 }
 
 function get_disk_size() {
@@ -95,6 +88,26 @@ function update_table_values() {
         func="${table_funcs[i]}"
         table_values[i]="$($func)"
     done
+}
+
+# A function that determines the most appropriate SI units
+# to display a kB value according to its magnitude
+function KB_to_SI_units() {
+    # The provided value in KBs
+    value="$1"
+    # The array of SI units
+    units=('KB' 'MB' 'GB' 'TB' 'PB' 'EB' 'ZB' 'YB')
+    # The index used to select the appropriate SI units
+    unit_index=0
+    # The while loop divides the initial value by 1024
+    # and increases the unit_index by 1
+    # which results in the appropriate value and SI units 
+    while [ $(( value >= 1024 )) ] && [ $(( unit_index < ${#units[@]} )) ]; do
+        value=$((value/1024))
+        unit_index=$((unit_index+1))
+    done
+    # Return the value and units
+    echo "$value ${units[$unit_index]}"
 }
 
 # A function that returns the maximum string length
