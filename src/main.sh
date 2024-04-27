@@ -63,7 +63,7 @@ function get_disk_space() {
 
 function get_IP_addr() {
     # get the primary network interface IP address
-    hostname -I | awk '{print $1}'
+    hostname -I
 }
 
 function get_IP_address_mode() {
