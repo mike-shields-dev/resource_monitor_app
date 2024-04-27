@@ -36,7 +36,7 @@ function get_uptime() {
 function get_total_RAM() {
     # get the total amount of RAM
     # in the most appropriate human-readable SI units
-    # "B" stands for byte
+    # the appended "B" stands for byte
     memory=$(free -h --si | grep "Mem" | awk '{print $3}')B
     echo "$memory"
 }
@@ -44,23 +44,21 @@ function get_total_RAM() {
 function get_free_RAM() {
     # get the amount of free RAM in
     # the most appropriate human-readable SI units
-    # "B" stands for byte
+    # the appended "B" stands for byte
     memory=$(free -h --si | grep "Mem" | awk '{print $2}')B
     echo "$memory"
 }
 
 function get_disk_size() {
     # get the total disk size in GB
-    echo $(df -h -si --total | awk 'END {print $2}')
+    # the appended "B" stands for byte
+    echo "$(df -h -si --total | awk 'END {print $2}')B"
 }
 
 function get_disk_space() {
     # get amount of free disk space in GB
-    echo "$(
-        df -h --si / --output=avail |
-            tail -n 1 |
-            tr -d '[:space:]'
-    )B"
+    # the appended "B" stands for "byte"
+    echo "$(df -h --si / --output=avail --total | awk 'END {print $1}')B"
 }
 
 function get_IP_addr() {
