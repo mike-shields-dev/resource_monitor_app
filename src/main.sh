@@ -58,7 +58,7 @@ function get_disk_size() {
 function get_disk_space() {
     # get amount of free disk space in GB
     # the appended "B" stands for "byte"
-    echo "$(df -h --si / --output=avail --total | awk 'END {print $1}')B"
+    echo "$(df -h --si --output=avail --total | awk 'END {print $1}')B"
 }
 
 function get_IP_addr() {
