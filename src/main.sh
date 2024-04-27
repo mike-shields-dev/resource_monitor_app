@@ -1,4 +1,4 @@
-bin/bash
+#!/bin/bash
 
 # GETTER FUNCTIONS:
 # These functions interrogate the system
