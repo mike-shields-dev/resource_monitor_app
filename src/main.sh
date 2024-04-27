@@ -11,7 +11,7 @@ function get_hostname() {
 
 function get_OS() {
     # return the device's operating system
-    lsb_release -d | cut -f2-
+    lsb_release -d | cut -f2
 }
 
 function get_num_tasks() {
