@@ -35,7 +35,7 @@ function get_total_RAM() {
     # Get the total amount of RAM
     # in the most appropriate human-readable SI units
     # Append the character "B" (stands for byte)
-    memory=”$(free -h --si | grep "Mem" | awk '{print $2}')B”
+    memory=$(free -h --si | grep "Mem" | awk '{print $2}')B
     # Return the result
     echo "$memory"
 }
@@ -45,7 +45,7 @@ function get_free_RAM() {
     # Get the amount of free RAM in the 
     # most appropriate human-readable SI units the 
     # Append the character "B" (stands for byte)    
-    memory=”$(free -h --si | grep "Mem" | awk '{print $4}')B”
+    memory=$(free -h --si | grep "Mem" | awk '{print $4}')B
     # Return the result
     echo "$memory"
 }
