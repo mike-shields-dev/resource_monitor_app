@@ -247,7 +247,7 @@ export header_inner_width
 # A list of references to the getter functions
 export table_funcs=(
     get_hostname
-    get_OS
+    get_OS_name
     get_num_tasks
     get_uptime
     get_total_RAM
