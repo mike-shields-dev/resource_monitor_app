@@ -37,7 +37,7 @@ function get_total_RAM() {
     # Append the character "B" (stands for byte)
     memory=$(free -h --si | grep "Mem" | awk '{print $2}')B
     # Return the result
-    echo "$memory"
+    echo $memory
 }
 
 
@@ -47,7 +47,7 @@ function get_free_RAM() {
     # Append the character "B" (stands for byte)    
     memory=$(free -h --si | grep "Mem" | awk '{print $4}')B
     # Return the result
-    echo "$memory"
+    echo $memory
 }
 
 function get_disk_size() {
