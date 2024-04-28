@@ -37,9 +37,8 @@ function get_total_RAM() {
     # Append the character "B" (stands for byte)
     memory=$(free -h --si | grep "Mem" | awk '{print $2}')B
     # Return the result
-    echo $memory
+    echo "$memory"
 }
-
 
 function get_free_RAM() {
     # Get the amount of free RAM in the 
@@ -53,13 +52,13 @@ function get_free_RAM() {
 function get_disk_size() {
     # Get the total disk size in GB the 
     # Append "B" (stands for byte)
-    echo "$(df -h --si --total –-output=size | tail -n 1)B"
+    echo "$(df -h --si --total --output=size | awk 'END {print $1}')B"
 }
 
 function get_disk_space() {
     # Get and return the amount of free disk space in GB the 
     # appended "B" stands for "byte"
-    echo "$(df -h --si --output=avail --total | tail -n 1)B"
+    echo "$(df -h --si --output=avail --total | awk 'END {print $1}')B"
 }
 
 function get_IP_address() {
@@ -91,15 +90,15 @@ function update_table_values() {
 function max_string_length() {
     local strings_arr=("${!1}") # Expand the provided array of strings
     local longest
-
-    for string in "${strings_arr[@]}"; do # Iterate over array elements
+    # Iterate the strings array
+    for string in "${strings_arr[@]}"; do 
         # if the current string's length is longer
-        # update max_length
+        # update longest
         if [[ ${#string} -gt ${#longest} ]]; then
             longest="$string"
         fi
     done
-
+    # Return the length of longest string
     echo "${#longest}"
 }
 
@@ -107,21 +106,25 @@ function max_string_length() {
 # Prints the header including box-drawing character
 # based on the computed table dimensions
 function print_header() {
-
     local header_length=${#header_text}
     local padding=$(((header_inner_width - header_length) / 2))
-
+    # Print top border
     echo -n "╔"
     printf "═%.0s" $(seq 1 "$header_inner_width")
     echo "╗"
+    # Print the row body
     echo -n "║"
+    # Print the header_text center aligned
     printf "%*s" $((padding + header_length)) "$header_text"
     printf "%*s" $((header_inner_width - padding - header_length)) ""
     echo "║"
-        # Print bottom border
+    # Print bottom border
     echo -n "╠"
+    # Print the left section according to the key column width
     printf "═%.0s" $(seq 1 "${key_column_inner_width}")
+    # Print the divider
     echo -n "╤"
+    # Print the right section according to the value column width
     printf "═%.0s" $(seq 1 "${value_column_inner_width}")
     echo "╣"
 }
@@ -129,22 +132,31 @@ function print_header() {
 # Prints all rows that are not the last row
 function print_intermediate_row() {
     index=$1
+    # Get the row key according to index
     key="${table_keys[index]}"
+    # Get the row value according to index
     value="${table_values[index]}"
     # Print the row with formatted key and value
     echo -n "║ "
+    # Print the key
     echo -n "$key"
     # Pad the right side of the key column
     printf "%*s" $((key_column_inner_width - ${#key} - 1)) ""
+    # Print the divider
     echo -n "│ "
+    # Print the value
     echo -n "$value"
+    # Pad the right side of the value column
     printf "%0.s " $(seq 1 $((value_column_inner_width - ${#value} - 1)))
     echo "║"
 
     # Print bottom border
     echo -n "╟"
+    # Print the left section according to the key column width
     printf "─%.0s" $(seq 1 "${key_column_inner_width}")
+    # Print the divider
     echo -n "┼"
+    # Print the right section according to the value column width
     printf "─%.0s" $(seq 1 "${value_column_inner_width}")
     echo "╢"
 }
@@ -152,21 +164,30 @@ function print_intermediate_row() {
 # Prints the last row
 function print_last_row() {
     index=$1
+    # Get the row key according to the index
     key="${table_keys[index]}"
+    # Get the row value according to the index
     value="${table_values[index]}"
     # Print the row with formatted key and value
     echo -n "║ "
+    # Print the key
     echo -n "$key"
+    # Pad the right side of the key column
     printf "%*s" $((key_column_inner_width - ${#key} - 1)) ""
+    # Print the divider
     echo -n "│ "
+    # Print the value
     echo -n "$value"
+    # Pad the right side of the value column
     printf "%0.s " $(seq 1 $((value_column_inner_width - ${#value} - 1)))
     echo "║"
 
     # Print bottom border
     echo -n "╚"
+    # Print the left side according to the key column width
     printf "═%.0s" $(seq 1 "${key_column_inner_width}")
     echo -n "╧"
+    # Print the right side according to the value column width
     printf "═%.0s" $(seq 1 "${value_column_inner_width}")
     echo "╝"
 }
@@ -193,13 +214,13 @@ function calculate_table_dims() {
     # divides the table's columns
     row_inner_width=$((key_column_inner_width + 1 + value_column_inner_width))
 
-    # Determine the interal width of the table's header
+    # Determine the internal width of the table's header
     # "+ 2" represents the padding either side of the key
     header_inner_width=$((${#header_text} + 2))
 
     # Conditional statements that eliminate any width differences
-    # between the header and rows so that
-    # the table's alignment is maintained if it's contents change
+    # between the header and rows so that the 
+    # table's alignment is maintained if its contents change
     if ((header_inner_width < row_inner_width)); then
         header_inner_width=$row_inner_width
     fi
@@ -210,14 +231,11 @@ function calculate_table_dims() {
 }
 
 # Prints the table
-# this function is also responsible for calculating the
-# table's dimensions based on the lengths of:
-# - table header banner
-# - longest table key
-# - longest table value
 function print_table() {
+    # Update the table's values
     update_table_values
 
+    # Update the table's dimensions
     calculate_table_dims
 
     # Print the table header
@@ -235,14 +253,14 @@ function print_table() {
     done
 }
 
+# Table dimensions
 export key_column_inner_width
 export value_column_inner_width
 export header_inner_width
 
 # !! IMPORTANT:
-# Ensure the proper sequential relationship between
-# the table's keys and getter functions is
-# maintained.
+# Ensure the proper sequential relationship between the 
+# table's keys and getter functions are maintained.
 
 # A list of references to the getter functions
 export table_funcs=(
@@ -254,7 +272,7 @@ export table_funcs=(
     get_free_RAM
     get_disk_size
     get_disk_space
-    get_IP_addr
+    get_IP_address
     get_IP_address_mode
 )
 
