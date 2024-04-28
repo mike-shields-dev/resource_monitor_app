@@ -266,7 +266,7 @@ export table_keys=(
     "System Up-Time"
     "Total RAM"
     "Available RAM"
-    "Total Disk Space"
+    "Total Disk Size"
     "Free Disk Space"
     "Host IP Address"
     "IP Addressing Mode"
