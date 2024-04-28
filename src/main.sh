@@ -5,72 +5,72 @@
 # for the table's values
 
 function get_hostname() {
-    # return the device's hostname
+    # Get and return the device's hostname
     hostname
 }
 
-function get_OS() {
-    # return the device's operating system
-    lsb_release -d | cut -f2
+function get_OS_name() {
+  # Get and return the Operating System description name
+  lsb_release -d | cut -f2  
 }
 
 function get_num_tasks() {
-    # return the number of running task or processes
+    # Get and return the number of running tasks or processes
     echo $(($(ps -e | wc -l) - 1))
 }
 
 function get_uptime() {
     # Get the system uptime in seconds
     uptime_seconds=$(awk -F'.' '{print $1}' /proc/uptime)
-
-    # Calculate the hours and minutes
+    # Calculate the hours and minutes past the hour
     hours=$((uptime_seconds / 3600))
     minutes=$((uptime_seconds % 3600 / 60))
-
-    # Format the output as HH:MM
+    # Format the output as 00h:00m
     formatted_uptime=$(printf "%02dh:%02dm" $hours $minutes)
-
+    # Return the result
     echo "$formatted_uptime"
 }
 
 function get_total_RAM() {
-    # get the total amount of RAM
+    # Get the total amount of RAM
     # in the most appropriate human-readable SI units
-    # the appended "B" stands for byte
-    memory=$(free -h --si | grep "Mem" | awk '{print $2}')B
+    # Append the character "B" (stands for byte)
+    memory=”$(free -h --si | grep "Mem" | awk '{print $2}')B”
+    # Return the result
     echo "$memory"
 }
 
+
 function get_free_RAM() {
-    # get the amount of free RAM in
-    # the most appropriate human-readable SI units
-    # the appended "B" stands for byte
-    memory=$(free -h --si | grep "Mem" | awk '{print $4}')B
+    # Get the amount of free RAM in the 
+    # most appropriate human-readable SI units the 
+    # Append the character "B" (stands for byte)    
+    memory=”$(free -h --si | grep "Mem" | awk '{print $4}')B”
+    # Return the result
     echo "$memory"
 }
 
 function get_disk_size() {
-    # get the total disk size in GB
-    # the appended "B" stands for byte
-    echo "$(df -h --si --total | awk 'END {print $2}')B"
+    # Get the total disk size in GB the 
+    # Append "B" (stands for byte)
+    echo "$(df -h --si --total –-output=size | tail -n 1)B"
 }
 
 function get_disk_space() {
-    # get amount of free disk space in GB
-    # the appended "B" stands for "byte"
-    echo "$(df -h --si --output=avail --total | awk 'END {print $1}')B"
+    # Get and return the amount of free disk space in GB the 
+    # appended "B" stands for "byte"
+    echo "$(df -h --si --output=avail --total | tail -n 1)B"
 }
 
-function get_IP_addr() {
-    # get the primary network interface IP address
-    hostname -I
+function get_IP_address() {
+    # Get the primary network interface IP address
+    hostname -I | awk '{print $1}'
 }
 
 function get_IP_address_mode() {
-    # get the IP addressing mode of the primary IP Address
-    ip addr show scope global |
-        grep "inet " |
-        awk '{print $7}' |
+    # Get and return the IP addressing mode of the primary IP Address
+    ip -4 addr show scope global | 
+        awk 'NR == 2 {print $7}' | 
         sed -e 's/.*/\u&/'
 }
 
